@@ -1,7 +1,9 @@
 def num_to_binary(num):
 	x = []
 	tests = [128, 64, 32, 16, 8, 4, 2, 1]
-	if num == 0:
+	if num > sum(tests):
+		return "ERROR: Subnet Octets are limited to 255 bytes!"
+	elif num == 0:
 		return ''.join([str(0) for i in range(0, 8)])
 	elif num == 255:
 		return ''.join([str(1) for i in range(0, 8)])
