@@ -1,22 +1,27 @@
 def num_to_binary(num):
-	x = []
-	tests = [128, 64, 32, 16, 8, 4, 2, 1]
-	if num > sum(tests):
-		return "ERROR: Subnet Octets are limited to 255 bytes!"
-	elif num == 0:
-		return ''.join([str(0) for i in range(0, 8)])
-	elif num == 255:
-		return ''.join([str(1) for i in range(0, 8)])
-	else:
-		while num > 0:
-			for item in tests:
-				if num >= item:
-					x.append(1)
-					num -= item
-				else:
-					x.append(0)
+	try:
+		result = int(num)
+	except ValueError:
+		return "ERROR: You must enter a number!"
+	else:	
+		x = []
+		tests = [128, 64, 32, 16, 8, 4, 2, 1]
+		if num > sum(tests):
+			return "ERROR: Subnet Octets are limited to 255 bytes!"
+		elif num == 0:
+			return ''.join([str(0) for i in range(0, 8)])
+		elif num == 255:
+			return ''.join([str(1) for i in range(0, 8)])
+		else:
+			while num > 0:
+				for item in tests:
+					if num >= item:
+						x.append(1)
+						num -= item
+					else:
+						x.append(0)
 
-	return ''.join([str(i) for i in x])
+		return ''.join([str(i) for i in x])
 def supply_subnet(subnet):
 	if '.' in subnet:
 		return subnet
