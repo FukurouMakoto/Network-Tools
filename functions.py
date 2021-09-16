@@ -1,5 +1,4 @@
 import argparse
-import sys
 
 
 # TODO:
@@ -98,14 +97,15 @@ def find_ip_range_end(broadcast_address):  # Finds where the IP range ends
 
 
 def parse_cli():
-	ip_help = "xxx.xxx.xxx.xxx format"
-	cidr_help = "standard cidr format minus the / (24, 16 etc.)"
-	title = "Network-Tools"
-	parser = argparse.ArgumentParser(description=title, prog=title)
-	parser.add_argument('--ip', help=ip_help)
-	parser.add_argument('--cidr', type=int, help=cidr_help)
-	args = parser.parse_args()
-	return args
+    ip_help = "xxx.xxx.xxx.xxx format"
+    cidr_help = "standard cidr format minus the / (24, 16 etc.)"
+    title = "Network-Tools"
+    parser = argparse.ArgumentParser(description=title, prog=title)
+    parser.add_argument('--ip', help=ip_help)
+    parser.add_argument('--cidr', type=int, help=cidr_help)
+    args = parser.parse_args()
+    return args
+
 
 def get_ip_address(args):  # Returns ip address passed by user
     return args.ip
