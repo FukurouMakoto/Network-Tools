@@ -1,4 +1,7 @@
-def num_to_binary(num):
+import sys
+
+
+def num_to_binary(num): #Converts number provided to binary
 	try:
 		result = int(num)
 	except ValueError:
@@ -22,17 +25,21 @@ def num_to_binary(num):
 						x.append(0)
 
 		return ''.join([str(i) for i in x])
-def supply_subnet(subnet):
-	if '.' in subnet:
+
+
+def supply_subnet(subnet): #IN PROGRESS
+	if '.' in subnet:	   #Will convert accept a subnet or convert CIDR into subnet
 		return subnet
 	else:
-		return slash_to_subnet(slash)
+		return slash_to_subnet(subnet)
 
-def ip_address_to_binary(address):
+
+def ip_address_to_binary(address): #Converts IP address to binary
 	x = address.split('.')
 	return '.'.join([num_to_binary(int(i)) for i in x])
 
-def slash_to_subnet(slash):
+
+def slash_to_subnet(slash): #Converts CIDR notation to subnet
 	x = []
 	slash = int(slash)
 	tests = [128, 64, 32, 16, 8, 4, 2, 1]
@@ -44,7 +51,8 @@ def slash_to_subnet(slash):
 		x.append(0)
 	return '.'.join([str(i) for i in x])
 
-def find_network_address(address, slash):
+
+def find_network_address(address, slash): #Finds the network address
 	a = address.split('.')
 	b = slash_to_subnet(slash).split('.')
 	c = []
@@ -57,7 +65,8 @@ def find_network_address(address, slash):
 			c.append('1')
 	return '.'.join([str(i) for i in c])
 
-def find_broadcast_address(ip_address, slash):
+
+def find_broadcast_address(ip_address, slash): #Finds the broadcast address
 	a = ip_address.split('.') 
 	b = slash_to_subnet(slash).split('.')
 	c = []
@@ -69,23 +78,39 @@ def find_broadcast_address(ip_address, slash):
 		else: 
 			c.append('1')
 	return '.'.join([str(i) for i in c])
-def find_ip_range_start(network_address):
+
+
+def find_ip_range_start(network_address): #Finds where the IP range begins
 	a = network_address.split('.')
 	a[3] = int(a[3]) + 1
 	return '.'.join([str(i) for i in a])
-def find_ip_range_end(broadcast_address):
+
+
+def find_ip_range_end(broadcast_address): #Finds where the IP range ends
 	a = broadcast_address.split('.')
 	a[3] = int(a[3]) - 1
 	return '.'.join([str(i) for i in a])
-def format(ip_address, CIDR):
+
+
+def get_ip_address():	#Returns ip address passed by user
+	return sys.argv[1]
+
+
+def get_subnet():		#Returns subnet passed by user
+	#if '.' in sys.argv[2]:
+
+	return sys.argv[2]
+
+
+def data_format(ip_address, cidr):
 	print(f"Supplied IP address: {ip_address}")
-	print(f"Supplied slash CIDR: {CIDR}")
+	print(f"Supplied slash CIDR: {cidr}")
 	print(f"IP address in binary: {ip_address_to_binary(ip_address)}")
-	subnet_mask = slash_to_subnet(CIDR)
-	print(f"Subnet Mask: {slash_to_subnet(CIDR)}")
-	network_address = find_network_address(ip_address, CIDR)
+	subnet_mask = slash_to_subnet(cidr)
+	print(f"Subnet Mask: {slash_to_subnet(cidr)}")
+	network_address = find_network_address(ip_address, cidr)
 	print(f"Network address: {network_address}")
-	broadcast_address = find_broadcast_address(ip_address, CIDR)
+	broadcast_address = find_broadcast_address(ip_address, cidr)
 	print(f"Broadcast address: {broadcast_address}")
 	ip_range_start = find_ip_range_start(network_address)
 	ip_range_end = find_ip_range_end(broadcast_address)
