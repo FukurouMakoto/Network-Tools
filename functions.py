@@ -2,11 +2,11 @@ import argparse
 
 
 # TODO:
-# We need to refactor the code to handle when non-default subnetting is being used.
+# We need to refactor the code to handle when classless subnets are being used.
 
 def num_to_binary(num):  # Converts number provided to binary
-    try:
-        result = int(num)
+    try:  # Catch integer values passed to num
+        int(num)
     except ValueError:
         return "ERROR: You must enter a number!"
     else:
@@ -15,9 +15,9 @@ def num_to_binary(num):  # Converts number provided to binary
         if num > sum(tests):
             return "ERROR: Subnet Octets are limited to 255 bytes!"
         elif num == 0:
-            return ''.join([str(0) for i in range(0, 8)])
+            return ''.join([str(0) * 8])
         elif num == 255:
-            return ''.join([str(1) for i in range(0, 8)])
+            return ''.join([str(1) * 8])
         else:
             while num > 0:
                 for item in tests:
@@ -72,8 +72,8 @@ def find_network_address(address, slash):  # Finds the network address
 
 
 def find_broadcast_address(ip_address, slash):  # Finds the broadcast address
-    a = ip_address.split('.')  #IP Address
-    b = slash.split('.')       #Subnet Mask
+    a = ip_address.split('.')  # IP Address
+    b = slash.split('.')  # Subnet Mask
     c = []
     for i in range(0, 4):
         if b[i] == '255':
@@ -137,6 +137,7 @@ def get_subnet(args):  # Returns subnet passed by user
         return args.subnet
     elif args.subnet is not None and args.cidr is not None:
         return args.subnet
+
 
 def data_format(ip_address, cidr):
     print(f"Supplied IP address: {ip_address}")
