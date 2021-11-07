@@ -10,6 +10,7 @@ def num_to_binary(num):  # Converts number provided to binary
     except ValueError:
         return "ERROR: You must enter a number!"
     else:
+        num = int(num)
         x = []
         tests = [128, 64, 32, 16, 8, 4, 2, 1]
         if num > sum(tests):
