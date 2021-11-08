@@ -7,15 +7,19 @@ A handy script for quickly finding network information. With just an IP address 
 
 ### Command-Line Arguments
 --help
+
 Print help menu to CLI.
 
 --ip
+
 Supply an IP address from your network.
 
 --cidr
+
 Provide the appropriate CIDR for your network. Please do not provide subnet if you are providing cidr.
 
 --subnet
+
 Provide the subnet mask for your network. Please do not provide CIDR if you are providing subnet.
 
 ### Recent Features
