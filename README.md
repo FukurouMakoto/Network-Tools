@@ -4,8 +4,22 @@ A handy script for quickly finding network information. With just an IP address 
 ### Instructions
 1) Clone project
 2) run main.py
-3) Follow the printed instructions
-4) It's that easy!
+
+### Command-Line Arguments
+--help
+Print help menu to CLI.
+
+--ip
+Supply an IP address from your network.
+
+--cidr
+Provide the appropriate CIDR for your network. Please do not provide subnet if you are providing cidr.
+
+--subnet
+Provide the subnet mask for your network. Please do not provide CIDR if you are providing subnet.
+
+### Recent Features
+Project now uses Sys-Args to provide command line arguements. Results are now returned to the command line, which means they can now be redirected to a text file if you are using Linux. 
 
 ### Future Additions
-I want to be able to run the program on the command line with flags like a traditional Linux program at some point. More research will be needed. I would also like to eventually create a GUI program for this as well.
+I would like to eventually create a GUI program for this. Also considering making a Java version as well for practice.
