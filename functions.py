@@ -1,8 +1,9 @@
 import argparse
-
+import re
 
 # TODO:
 # We need to refactor the code to handle when classless subnets are being used.
+
 
 def num_to_binary(num):  # Converts number provided to binary
     try:  # Catch integer values passed to num
@@ -54,6 +55,24 @@ def slash_to_subnet(slash):  # Converts CIDR notation to subnet
         x.append(0)
     return '.'.join([str(i) for i in x])
 
+def subnet_to_slash(subnet): # IN TESTING
+    a = subnet.split('.')
+    for item in a:
+        a[a.index(item)] = int(item)
+    #print(a)
+    tests = [128, 64, 32, 16, 8, 4, 2, 1]
+    slash = 0
+    for i in a:
+        if i == '255':
+            slash += 8
+        elif int(i) in tests:
+            slash += 1
+        else:
+            for num in tests:
+                if i > num:
+                    slash += 1
+                    i -= num
+    return slash
 
 def find_network_address(address, slash):  # Finds the network address
     a = address.split('.')
@@ -87,16 +106,16 @@ def find_broadcast_address(ip_address, slash):  # Finds the broadcast address
     return '.'.join([str(i) for i in c])
 
 
-def get_magic_number(interesting_octet, subnet):
+def get_magic_number(interesting_octet, subnet):  # Return magic number for classless subnet calculation
     magic_number = 256 - int(subnet[interesting_octet])
     return magic_number
 
 
-def get_interesting_octet_value_broadcast(ip_address, interesting_octet, magic_number):
+def get_interesting_octet_value_broadcast(ip_address, interesting_octet, magic_number):  # for classless subnet calculation
     return int(ip_address[interesting_octet]) + magic_number - 1
 
 
-def get_interesting_octet_value_network(ip_address, interesting_octet, magic_number):
+def get_interesting_octet_value_network(ip_address, interesting_octet, magic_number):  # for classless subnet calculation
     return int(int(ip_address[interesting_octet]) / magic_number) * magic_number
 
 
@@ -112,11 +131,11 @@ def find_ip_range_end(broadcast_address):  # Finds where the IP range ends
     return '.'.join([str(i) for i in a])
 
 
-def parse_cli():
-    ip_help = "xxx.xxx.xxx.xxx format"
-    cidr_help = "standard cidr format minus the / (24, 16 etc.)"
-    subnet_help = "can enter full subnet mask here (255.255.255.0)"
+def parse_cli():  # parser for cli arguments. Any new cli arguments go here
     title = "Network-Tools"
+    ip_help = "xxx.xxx.xxx.xxx format"
+    cidr_help = "standard cidr format minus the '/' (24, 16 etc.)"
+    subnet_help = "can enter full subnet mask here (255.255.255.0)"
     parser = argparse.ArgumentParser(description=title, prog=title)
     parser.add_argument('--ip', help=ip_help)
     parser.add_argument('--cidr', help=cidr_help)
@@ -132,14 +151,22 @@ def get_ip_address(args):  # Returns ip address passed by user
 def get_subnet(args):  # Returns subnet passed by user
     # if '.' in sys.argv[2]:
     if args.subnet is None:
-        return args.cidr.strip('/')
+        return slash_to_subnet(args.cidr.strip('/'))
     elif args.cidr is None:
         return args.subnet
     elif args.subnet is not None and args.cidr is not None:
         return args.subnet
 
 
-def data_format(ip_address, cidr):
+def validate(address):  # for catching invalid inputs such as words
+    validator = re.compile(r'(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}')
+    if validator.match(address):
+        return True
+    else:
+        return False
+
+
+def data_format(ip_address, cidr):  # formatted printout
     print(f"Supplied IP address: {ip_address}")
     print(f"Supplied subnet/CIDR: {cidr}")
     print(f"IP address in binary: {ip_address_to_binary(ip_address)}")
