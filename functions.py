@@ -43,37 +43,26 @@ def ip_address_to_binary(address):  # Converts IP address to binary
     x = address.split('.')
     return '.'.join([num_to_binary(int(i)) for i in x])
 
+def subnet_to_cidr(address): #Converts a subnet into cidr
+    cidr = 0
+    collections = [ip_address_to_binary(x) for x in address.split('.')]
+    for octet in collections:
+	    for i in octet:
+		    if i == '1':
+			    cidr += 1
+    return cidr
 
-def slash_to_subnet(slash):  # Converts CIDR notation to subnet
+def cidr_to_subnet(slash):  # Converts CIDR notation to subnet
     x = []
-    slash = int(slash)
+    cidr = int(cidr)
     tests = [128, 64, 32, 16, 8, 4, 2, 1]
-    while slash > 8:
+    while cidr > 8:
         x.append(255)
-        slash -= 8
-    x.append(sum(tests[0:slash]))
+        cidr -= 8
+    x.append(sum(tests[0:cidr]))
     while len(x) != 4:
         x.append(0)
     return '.'.join([str(i) for i in x])
-
-def subnet_to_slash(subnet): # IN TESTING
-    a = subnet.split('.')
-    for item in a:
-        a[a.index(item)] = int(item)
-    #print(a)
-    tests = [128, 64, 32, 16, 8, 4, 2, 1]
-    slash = 0
-    for i in a:
-        if i == '255':
-            slash += 8
-        elif int(i) in tests:
-            slash += 1
-        else:
-            for num in tests:
-                if i > num:
-                    slash += 1
-                    i -= num
-    return slash
 
 def find_network_address(address, slash):  # Finds the network address
     a = address.split('.')
@@ -137,10 +126,12 @@ def parse_cli():  # parser for cli arguments. Any new cli arguments go here
     ip_help = "xxx.xxx.xxx.xxx format"
     cidr_help = "standard cidr format minus the '/' (24, 16 etc.)"
     subnet_help = "can enter full subnet mask here (255.255.255.0)"
+    convert_help = "Conversion programs"
     parser = argparse.ArgumentParser(description=title, prog=title)
     parser.add_argument('--ip', help=ip_help)
     parser.add_argument('--cidr', help=cidr_help)
     parser.add_argument('--subnet', help=subnet_help)
+    parser.add_argument('--convert', help=convert_help)
     args = parser.parse_args()
     return args
 
