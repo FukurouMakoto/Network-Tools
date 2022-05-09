@@ -1,5 +1,5 @@
-from functions import *
-
+#from test_rename import * For test refactoring
+from functions import * #Full Version
 
 def main():
 	args = parse_cli()

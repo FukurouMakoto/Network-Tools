@@ -3,6 +3,8 @@ import re
 
 # TODO:
 # We need to refactor the code to handle when classless subnets are being used.
+# [X]Show the number of usable hosts IP's /Completed 05/06/22
+# Show Wildcard Mask
 
 
 def num_to_binary(num):  # Converts number provided to binary
@@ -36,7 +38,7 @@ def supply_subnet(subnet):  # IN PROGRESS
     if '.' in str(subnet):  # Will convert accept a subnet or convert CIDR into subnet
         return subnet
     else:
-        return slash_to_subnet(subnet)
+        return cidr_to_subnet(subnet)
 
 
 def ip_address_to_binary(address):  # Converts IP address to binary
@@ -45,14 +47,14 @@ def ip_address_to_binary(address):  # Converts IP address to binary
 
 def subnet_to_cidr(address): #Converts a subnet into cidr
     cidr = 0
-    collections = [ip_address_to_binary(x) for x in address.split('.')]
-    for octet in collections:
+    octets = [ip_address_to_binary(x) for x in address.split('.')]
+    for octet in octets:
 	    for i in octet:
 		    if i == '1':
 			    cidr += 1
     return cidr
 
-def cidr_to_subnet(slash):  # Converts CIDR notation to subnet
+def cidr_to_subnet(cidr):  # Converts CIDR notation to subnet
     x = []
     cidr = int(cidr)
     tests = [128, 64, 32, 16, 8, 4, 2, 1]
@@ -124,8 +126,8 @@ def find_ip_range_end(broadcast_address):  # Finds where the IP range ends
 def parse_cli():  # parser for cli arguments. Any new cli arguments go here
     title = "Network-Tools"
     ip_help = "xxx.xxx.xxx.xxx format"
-    cidr_help = "standard cidr format minus the '/' (24, 16 etc.)"
-    subnet_help = "can enter full subnet mask here (255.255.255.0)"
+    cidr_help = "standard cidr format minus the '/' (ex: 24, 16 etc.)"
+    subnet_help = "can enter full subnet mask here (ex: 255.255.255.0)"
     convert_help = "Conversion programs"
     parser = argparse.ArgumentParser(description=title, prog=title)
     parser.add_argument('--ip', help=ip_help)
@@ -143,7 +145,7 @@ def get_ip_address(args):  # Returns ip address passed by user
 def get_subnet(args):  # Returns subnet passed by user
     # if '.' in sys.argv[2]:
     if args.subnet is None:
-        return slash_to_subnet(args.cidr.strip('/'))
+        return cidr_to_subnet(args.cidr.strip('/'))
     elif args.cidr is None:
         return args.subnet
     elif args.subnet is not None and args.cidr is not None:
@@ -157,6 +159,25 @@ def validate(address):  # for catching invalid inputs such as words
     else:
         return False
 
+def find_total_usable_ips(subnet_mask):
+    # The formula to find the number of usable IP's is 2^H - 2
+    # H being the number of host bits (0's) 
+    # Subtract 2 for the broadcast and network ID ip's
+    subnet_binary = len([int(x) for x in ip_address_to_binary(subnet_mask) if x !=
+    '.' and x != '1'])
+    usable_ips = 2**subnet_binary - 2
+    return "{:,}".format(usable_ips)
+
+def find_wildcard_mask(subnet_mask):
+    #find the wildcard mask based off the subnet mask
+    #Each octet should be the difference from the 255 and the subnet mask
+    subnet_mask = subnet_mask.split('.')
+    full_mask = ['255', '255', '255', '255']
+    wildcard_mask = []
+    for i in range(4):
+	    octet = int(full_mask[i]) - int(subnet_mask[i])
+	    wildcard_mask.append(octet)
+    return '.'.join([str(x) for x in wildcard_mask])
 
 def data_format(ip_address, cidr):  # formatted printout
     print(f"Supplied IP address: {ip_address}")
@@ -164,6 +185,8 @@ def data_format(ip_address, cidr):  # formatted printout
     print(f"IP address in binary: {ip_address_to_binary(ip_address)}")
     subnet_mask = supply_subnet(cidr)  # To test new code replace cidr with supply_subnet(cidr)
     print(f"Subnet Mask: {supply_subnet(subnet_mask)}")
+    wildcard_mask = find_wildcard_mask(subnet_mask)
+    print(f"Wilcard Mask: {wildcard_mask}") 
     network_address = find_network_address(ip_address, subnet_mask)
     print(f"Network address: {network_address}")
     broadcast_address = find_broadcast_address(network_address, subnet_mask)
@@ -171,3 +194,4 @@ def data_format(ip_address, cidr):  # formatted printout
     ip_range_start = find_ip_range_start(network_address)
     ip_range_end = find_ip_range_end(broadcast_address)
     print(f"Usable Host IP range: {ip_range_start} - {ip_range_end}")
+    print(f"Total amount of usable IP's: {find_total_usable_ips(subnet_mask)}")
